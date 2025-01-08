@@ -28,6 +28,11 @@ ament_target_dependencies(lidar_filter rclcpp std_msgs geometry_msgs sensor_msgs
 install(TARGETS lidar_filter
   DESTINATION lib/${PROJECT_NAME})
 
+add_executable(grid_filter src/grid_filter.cpp)
+ament_target_dependencies(grid_filter rclcpp localization_msgs)
+install(TARGETS grid_filter
+  DESTINATION lib/${PROJECT_NAME})
+
 install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
 )
