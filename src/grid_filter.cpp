@@ -1,7 +1,7 @@
+#include <boost/dynamic_bitset.hpp>
 #include <localization_msgs/msg/point_array.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <string>
-#include <vector>
 
 class GridFilter : public rclcpp::Node {
 public:
@@ -38,8 +38,12 @@ private:
 
         localization_msgs::msg::PointArray downsampled_points;
         downsampled_points.points.reserve(msg->points.size());
-        std::vector<std::vector<bool>> grid(static_cast<int>(max_field_width / grid_width),
-                                            std::vector<bool>(static_cast<int>(max_field_height / grid_height), false));
+
+        int grid_size_x = static_cast<int>(max_field_width / grid_width);
+        int grid_size_y = static_cast<int>(max_field_height / grid_height);
+        boost::dynamic_bitset<> grid(grid_size_x * grid_size_y);
+        grid.reset();
+
         double height = max_field_height / 2.0;
         double width = max_field_width / 2.0;
 
@@ -48,8 +52,8 @@ private:
                 continue;
             int x_index = static_cast<int>((point.x + width) / grid_width);
             int y_index = static_cast<int>((point.y + height) / grid_height);
-            if (!grid[x_index][y_index]) {
-                grid[x_index][y_index] = true;
+            if (!grid[x_index + y_index * grid_size_x]) {
+                grid.set(x_index + y_index * grid_size_x);
                 downsampled_points.points.push_back(point);
             }
         }
