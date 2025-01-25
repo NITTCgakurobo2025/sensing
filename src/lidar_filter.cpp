@@ -134,7 +134,7 @@ private:
 
         double x0 = pre_t.transform.translation.x;
         double y0 = pre_t.transform.translation.y;
-        double z0 = getYaw(t.transform.rotation) + msg->angle_min;
+        double z0 = getYaw(t.transform.rotation) + msg->angle_max;
 
         tmp_pre_z0 = z0;
         geometry_msgs::msg::Point p;
@@ -144,7 +144,7 @@ private:
 
             double x = x0 + dx * i;
             double y = y0 + dy * i;
-            double z = z0 + (dz + msg->angle_increment) * i;
+            double z = z0 + (dz - msg->angle_increment) * i;
             p.x = msg->ranges[i] * std::cos(z) + x;
             p.y = msg->ranges[i] * std::sin(z) + y;
 
