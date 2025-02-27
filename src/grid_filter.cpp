@@ -15,8 +15,9 @@ public:
         this->get_parameter("output_topic", output_topic);
 
         // dynamic parameters
-        this->declare_parameter<double>("max_field_width", 9.0);
-        this->declare_parameter<double>("max_field_height", 16.0);
+        this->declare_parameter<double>("field_width", 8.0);
+        this->declare_parameter<double>("field_height", 15.0);
+        this->declare_parameter<double>("max_diff", 0.5);
         this->declare_parameter<double>("grid_width", 0.5);
         this->declare_parameter<double>("grid_height", 0.5);
 
@@ -31,24 +32,27 @@ private:
 
     void topicCallback(const localization_msgs::msg::PointArray::SharedPtr msg) {
         double max_field_height, max_field_width, grid_width, grid_height;
-        this->get_parameter("max_field_height", max_field_height);
-        this->get_parameter("max_field_width", max_field_width);
+        double field_height, field_width, max_diff;
+        this->get_parameter("field_height", field_height);
+        this->get_parameter("field_width", field_width);
+        this->get_parameter("max_diff", max_diff);
         this->get_parameter("grid_width", grid_width);
         this->get_parameter("grid_height", grid_height);
 
         localization_msgs::msg::PointArray downsampled_points;
         downsampled_points.points.reserve(msg->points.size());
 
-        int grid_size_x = static_cast<int>(max_field_width / grid_width);
-        int grid_size_y = static_cast<int>(max_field_height / grid_height);
+        int grid_size_x = static_cast<int>((field_width + 2 * max_diff) / grid_width);
+        int grid_size_y = static_cast<int>((field_height + 2 * max_diff) / grid_height);
         boost::dynamic_bitset<> grid(grid_size_x * grid_size_y);
         grid.reset();
 
-        double height = max_field_height / 2.0;
-        double width = max_field_width / 2.0;
+        double height = field_height / 2.0;
+        double width = field_width / 2.0;
 
         for (const auto &point : msg->points) {
-            if (std::abs(point.x) > width || std::abs(point.y) > height)
+            if (std::abs(point.x - width) > max_diff && std::abs(point.x + width) > max_diff &&
+                std::abs(point.y - height) > max_diff && std::abs(point.y + height) > max_diff)
                 continue;
             int x_index = static_cast<int>((point.x + width) / grid_width);
             int y_index = static_cast<int>((point.y + height) / grid_height);
