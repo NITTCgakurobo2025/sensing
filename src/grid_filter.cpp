@@ -31,8 +31,7 @@ private:
     rclcpp::Subscription<localization_msgs::msg::PointArray>::SharedPtr input_sub_;
 
     void topicCallback(const localization_msgs::msg::PointArray::SharedPtr msg) {
-        double max_field_height, max_field_width, grid_width, grid_height;
-        double field_height, field_width, max_diff;
+        double field_height, field_width, max_diff, grid_width, grid_height;
         this->get_parameter("field_height", field_height);
         this->get_parameter("field_width", field_width);
         this->get_parameter("max_diff", max_diff);
@@ -42,8 +41,8 @@ private:
         localization_msgs::msg::PointArray downsampled_points;
         downsampled_points.points.reserve(msg->points.size());
 
-        int grid_size_x = static_cast<int>((field_width + 2 * max_diff) / grid_width);
-        int grid_size_y = static_cast<int>((field_height + 2 * max_diff) / grid_height);
+        const int grid_size_x = static_cast<int>((field_width + 2 * max_diff) / grid_width);
+        const int grid_size_y = static_cast<int>((field_height + 2 * max_diff) / grid_height);
         boost::dynamic_bitset<> grid(grid_size_x * grid_size_y);
         grid.reset();
 
@@ -65,7 +64,7 @@ private:
         downsampled_points.header = msg->header;
         output_pub_->publish(downsampled_points);
 
-        RCLCPP_INFO(this->get_logger(), "Received %d points, downsampled to %d points", msg->points.size(),
+        RCLCPP_INFO(this->get_logger(), "Received %ld points, downsampled to %ld points", msg->points.size(),
                     downsampled_points.points.size());
     }
 };
