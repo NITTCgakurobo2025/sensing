@@ -55,6 +55,13 @@ private:
                 continue;
             int x_index = static_cast<int>((point.x + width) / grid_width);
             int y_index = static_cast<int>((point.y + height) / grid_height);
+
+            if (x_index < 0 || x_index >= grid_size_x || y_index < 0 || y_index >= grid_size_y) {
+                RCLCPP_WARN(this->get_logger(), "Outlier detected: x=%f, y=%f (index: %d, %d)", point.x, point.y,
+                            x_index, y_index);
+                continue;
+            }
+
             if (!grid[x_index + y_index * grid_size_x]) {
                 grid.set(x_index + y_index * grid_size_x);
                 downsampled_points.points.push_back(point);
