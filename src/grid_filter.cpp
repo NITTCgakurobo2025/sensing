@@ -41,8 +41,8 @@ private:
         localization_msgs::msg::PointArray downsampled_points;
         downsampled_points.points.reserve(msg->points.size());
 
-        const int grid_size_x = static_cast<int>((field_width + 2 * max_diff) / grid_width);
-        const int grid_size_y = static_cast<int>((field_height + 2 * max_diff) / grid_height);
+        const int grid_size_x = static_cast<int>((field_width + 2 * max_diff) / grid_width + 1);
+        const int grid_size_y = static_cast<int>((field_height + 2 * max_diff) / grid_height + 1);
         boost::dynamic_bitset<> grid(grid_size_x * grid_size_y);
         grid.reset();
 
