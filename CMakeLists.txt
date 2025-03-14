@@ -33,6 +33,11 @@ ament_target_dependencies(grid_filter rclcpp localization_msgs)
 install(TARGETS grid_filter
   DESTINATION lib/${PROJECT_NAME})
 
+add_executable(lidar_merger src/lidar_merger.cpp)
+ament_target_dependencies(lidar_merger rclcpp localization_msgs)
+install(TARGETS lidar_merger
+  DESTINATION lib/${PROJECT_NAME})
+
 install(DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}/launch
 )

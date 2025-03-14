@@ -67,4 +67,18 @@ def generate_launch_description():
                     'use_sim_time': True
             }]
         ),
+        Node(
+            package='sensing',
+            executable='lidar_merger',
+            namespace=name,
+            name='lidar_merger',
+            output='screen',
+            parameters=[{
+                    'lidar_topic1': ['/', name, '/downsampled_front_scan'],
+                    'lidar_topic2': ['/', name, '/downsampled_back_scan'],
+                    'output_topic': ['/', name, '/downsampled_scan'],
+                    'base_frame': [name, '/base_footprint'],
+                    'use_sim_time': True
+            }]
+        ),
     ])
