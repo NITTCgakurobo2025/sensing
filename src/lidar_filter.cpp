@@ -31,7 +31,9 @@ public:
         // dynamic parameters
         this->declare_parameter<bool>("use_imu_orientation", false);
         this->declare_parameter<bool>("use_odom_translation", false);
-        this->declare_parameter<double>("robot_radius", 0.45);
+        // this->declare_parameter<double>("robot_radius", 0.45);
+        this->declare_parameter<double>("robot_radius", 1.5); // 仮
+        // TODO: 別途フィルタリングを実装
 
         lidar_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
             lidar_topic, 10, std::bind(&LidarFilter::filterLaserScan, this, std::placeholders::_1));
