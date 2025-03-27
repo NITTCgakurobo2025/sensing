@@ -20,6 +20,7 @@ public:
         this->declare_parameter<double>("max_diff", 0.5);
         this->declare_parameter<double>("grid_width", 0.5);
         this->declare_parameter<double>("grid_height", 0.5);
+        this->declare_parameter<double>("ignore_radius", 1.5);
 
         input_sub_ = this->create_subscription<localization_msgs::msg::PointArray>(
             input_topic, 10, std::bind(&GridFilter::topicCallback, this, std::placeholders::_1));
@@ -31,12 +32,13 @@ private:
     rclcpp::Subscription<localization_msgs::msg::PointArray>::SharedPtr input_sub_;
 
     void topicCallback(const localization_msgs::msg::PointArray::SharedPtr msg) {
-        double field_height, field_width, max_diff, grid_width, grid_height;
+        double field_height, field_width, max_diff, grid_width, grid_height, ignore_radius;
         this->get_parameter("field_height", field_height);
         this->get_parameter("field_width", field_width);
         this->get_parameter("max_diff", max_diff);
         this->get_parameter("grid_width", grid_width);
         this->get_parameter("grid_height", grid_height);
+        this->get_parameter("ignore_radius", ignore_radius);
 
         localization_msgs::msg::PointArray downsampled_points;
         downsampled_points.points.reserve(msg->points.size());
@@ -52,6 +54,9 @@ private:
         for (const auto &point : msg->points) {
             if (std::abs(point.x - width) > max_diff && std::abs(point.x + width) > max_diff &&
                 std::abs(point.y - height) > max_diff && std::abs(point.y + height) > max_diff)
+                continue;
+            if ((point.x - msg->pose.x) * (point.x - msg->pose.x) + (point.y - msg->pose.y) * (point.y - msg->pose.y) <
+                ignore_radius * ignore_radius)
                 continue;
             int x_index = static_cast<int>((point.x + width) / grid_width);
             int y_index = static_cast<int>((point.y + height) / grid_height);
