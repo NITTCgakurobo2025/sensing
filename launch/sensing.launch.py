@@ -9,25 +9,20 @@ from launch.actions import IncludeLaunchDescription
 
 
 def generate_launch_description():
+    name_parameter = DeclareLaunchArgument(
+        'robot_name',
+        default_value='R1')
+    name = LaunchConfiguration('robot_name')
 
-    robots = [
-        "R1",
-        "R2"
-    ]
-
-    launch_elements = []
-
-    for robot in robots:
-        launch_elements.append(
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join(
-                        get_package_share_directory('sensing'),
-                        'launch', 'lidar_filter.launch.py'
-                    ),
+    return LaunchDescription([
+        name_parameter,
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('sensing'),
+                    'launch', 'lidar_filter.launch.py'
                 ),
-                launch_arguments={'robot_name': robot}.items()
-            )
+            ),
+            launch_arguments={'robot_name': name}.items()
         )
-
-    return LaunchDescription(launch_elements)
+    ])
