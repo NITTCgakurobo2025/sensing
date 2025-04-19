@@ -31,9 +31,7 @@ public:
         // dynamic parameters
         this->declare_parameter<bool>("use_imu_orientation", false);
         this->declare_parameter<bool>("use_odom_translation", false);
-        // this->declare_parameter<double>("robot_radius", 0.45);
-        this->declare_parameter<double>("robot_radius", 1.5); // 仮
-        // TODO: 別途フィルタリングを実装
+        this->declare_parameter<double>("robot_radius", 0.45);
 
         lidar_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
             lidar_topic, 10, std::bind(&LidarFilter::filterLaserScan, this, std::placeholders::_1));
@@ -156,6 +154,11 @@ private:
 
             filtered_scan.points.emplace_back(p);
         }
+
+        filtered_scan.pose.x = robot_center.x;
+        filtered_scan.pose.y = robot_center.y;
+        filtered_scan.pose.theta = getYaw(t.transform.rotation);
+
         filtered_scan_pub_->publish(filtered_scan);
 
         last_scan_time_ = current_time;

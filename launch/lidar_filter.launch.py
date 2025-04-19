@@ -43,39 +43,26 @@ def generate_launch_description():
         ),
         Node(
             package='sensing',
-            executable='grid_filter',
-            namespace=name,
-            name='front_grid_filter',
-            output='screen',
-            parameters=[{
-                    'input_topic': ['/', name, '/filtered_front_scan'],
-                    'output_topic': ['/', name, '/downsampled_front_scan'],
-                    'base_frame': [name, '/base_footprint'],
-                    'use_sim_time': True
-            }]
-        ),
-        Node(
-            package='sensing',
-            executable='grid_filter',
-            namespace=name,
-            name='back_grid_filter',
-            output='screen',
-            parameters=[{
-                    'input_topic': ['/', name, '/filtered_back_scan'],
-                    'output_topic': ['/', name, '/downsampled_back_scan'],
-                    'base_frame': [name, '/base_footprint'],
-                    'use_sim_time': True
-            }]
-        ),
-        Node(
-            package='sensing',
             executable='lidar_merger',
             namespace=name,
             name='lidar_merger',
             output='screen',
             parameters=[{
-                    'lidar_topic1': ['/', name, '/downsampled_front_scan'],
-                    'lidar_topic2': ['/', name, '/downsampled_back_scan'],
+                    'lidar_topic1': ['/', name, '/filtered_front_scan'],
+                    'lidar_topic2': ['/', name, '/filtered_back_scan'],
+                    'output_topic': ['/', name, '/merged_scan'],
+                    'base_frame': [name, '/base_footprint'],
+                    'use_sim_time': True
+            }]
+        ),
+        Node(
+            package='sensing',
+            executable='grid_filter',
+            namespace=name,
+            name='front_grid_filter',
+            output='screen',
+            parameters=[{
+                    'input_topic': ['/', name, '/merged_scan'],
                     'output_topic': ['/', name, '/downsampled_scan'],
                     'base_frame': [name, '/base_footprint'],
                     'use_sim_time': True
